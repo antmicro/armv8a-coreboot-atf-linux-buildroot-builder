@@ -1,0 +1,34 @@
+diff --git a/src/arch/arm64/Makefile.inc b/src/arch/arm64/Makefile.inc
+index 6b4974363..d5409124d 100644
+--- a/src/arch/arm64/Makefile.inc
++++ b/src/arch/arm64/Makefile.inc
+@@ -141,2 +141,29 @@ ifeq ($(CONFIG_ARM64_BL31_EXTERNAL_FILE),"")
+ 
++# Qemu can't get through ATF with these two enabled.
++#BL31_MAKEARGS += ERRATA_DSU_798953=1
++#BL31_MAKEARGS += ERRATA_A76_1946160=1
++
++BL31_MAKEARGS += ERRATA_A76_2743102=1
++
++BL31_MAKEARGS += ERRATA_A78_2132060=1
++BL31_MAKEARGS += ERRATA_A78_2242635=1
++BL31_MAKEARGS += ERRATA_A78_2376745=1
++BL31_MAKEARGS += ERRATA_A78_2395406=1
++BL31_MAKEARGS += ERRATA_A78_2712571=1
++BL31_MAKEARGS += ERRATA_A78_2742426=1
++BL31_MAKEARGS += ERRATA_A78_2772019=1
++BL31_MAKEARGS += ERRATA_A78_2779479=1
++
++BL31_MAKEARGS += QEMU_CPU_LIBS="        \
++        lib/cpus/aarch64/aem_generic.S  \
++        lib/cpus/aarch64/cortex_a53.S   \
++        lib/cpus/aarch64/cortex_a57.S   \
++        lib/cpus/aarch64/cortex_a72.S   \
++        lib/cpus/aarch64/cortex_a75.S   \
++        lib/cpus/aarch64/cortex_a76.S   \
++        lib/cpus/aarch64/cortex_a78.S   \
++        lib/cpus/aarch64/neoverse_n_common.S \
++        lib/cpus/aarch64/neoverse_n1.S  \
++        lib/cpus/aarch64/qemu_max.S"
++
+ BL31_SOURCE := $(top)/3rdparty/arm-trusted-firmware

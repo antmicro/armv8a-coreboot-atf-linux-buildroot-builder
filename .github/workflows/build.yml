@@ -1,0 +1,38 @@
+name: Build
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v3
+
+      - name: Install dependencies
+        run: |
+          sudo apt update && DEBIAN_FRONTEND=noninteractive sudo apt install --no-install-recommends -y gcc-aarch64-linux-gnu flex bison device-tree-compiler bc libssl-dev build-essential curl git gnat libncurses5-dev locales m4 zlib1g-dev u-boot-tools file wget cpio unzip rsync
+
+      - name: Build
+        run: |
+         export FILE_SUFFIX=armv8_2a-gicv3
+         export GIC_VERSION=3
+         export DTS=a75.dts
+         export BUILDROOT_DEFCONFIG=cortex-a75_defconfig
+         ./build_buildroot.sh $BUILDROOT_DEFCONFIG
+         ./build_linux_payload.sh $DTS
+         ./build_coreboot_with_linux.sh $GIC_VERSION
+         cp coreboot/build/bl31.elf bl31-atf-$FILE_SUFFIX.elf
+         cp coreboot/build/coreboot.rom coreboot-linux-$FILE_SUFFIX.rom
+         cp linux/vmlinux vmlinux-$FILE_SUFFIX
+         cp linux_files/virt.dtb virt-$FILE_SUFFIX.dtb
+         cp linux_files/Image Image-$FILE_SUFFIX
+         cp linux_files/rootfs.cpio rootfs-$FILE_SUFFIX.cpio
+
+      - name: Archive tests binaries
+        uses: actions/upload-artifact@v3
+        with:
+          name: test-binaries
+          path: artifacts/
+
